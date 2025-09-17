@@ -1,0 +1,120 @@
+import java.util.ArrayDeque;
+import java.util.Scanner;
+
+public class Main {
+
+    private static Scanner scanner = new Scanner(System.in);
+    private static ArrayDeque<Container> containerStack = new ArrayDeque<>();
+    private static ArrayDeque<Ship> shipQueue = new ArrayDeque<>();
+
+    public static void main(String[] args) {
+
+        boolean isRunning = true;
+        int choice;
+
+        while (isRunning){
+            System.out.println("=== Port Container Management System ===");
+            System.out.println("[1] Store container (push)");
+            System.out.println("[2] View port containers");
+            System.out.println("[3] Register arriving ship (enqueue)");
+            System.out.println("[4] View waiting ships");
+            System.out.println("[5] Load next ship (pop container + poll ship)");
+            System.out.println("[0] Exit");
+            System.out.print("Choose option: ");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+            System.out.println();
+
+            switch(choice){
+                case 1:
+                    storeContainer();
+                    break;
+                case 2:
+                    viewContainers();
+                    break;
+                case 3:
+                    registerShip();
+                    break;
+                case 4:
+                    viewShips();
+                    break;
+                case 5:
+                    loadNextShip();
+                    break;
+                case 0:
+                    System.out.println("Goodbye!");
+                    isRunning = false;
+                    break;
+                default:
+                    System.out.println("Invalid Input!");
+            }
+        }
+    }
+    private static void storeContainer() {
+        System.out.print("Enter container ID: ");
+        String id = scanner.nextLine();
+        System.out.print("Enter description: ");
+        String description = scanner.nextLine();
+        System.out.print("Enter weight: ");
+        String weight = scanner.nextLine();
+
+        Container container = new Container(id, description, weight);
+        containerStack.push(container);
+        System.out.println("Stored: " + container);
+        System.out.println();
+    }
+    private static void viewContainers(){
+        if (containerStack.isEmpty()) {
+            System.out.println("No containers in port.");
+            return;
+        }
+        System.out.println("\nTOP →");
+        for (Container container : containerStack) {
+            System.out.println(container);
+        }
+        System.out.println("← BOTTOM");
+        System.out.println();
+    }
+    private static void registerShip(){
+        System.out.print("Enter ship name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter captain name: ");
+        String captainName = scanner.nextLine();
+        Ship ship = new Ship(name, captainName);
+        shipQueue.add(ship);
+
+        System.out.println("Registered: " + ship);
+        System.out.println();
+    }
+    private static void viewShips(){
+        if(shipQueue.isEmpty()){
+            System.out.println("No ships currently waiting.");
+            System.out.println();
+            return;
+        }
+        System.out.println("\nFRONT →");
+        for(Ship ship: shipQueue){
+            System.out.println(ship);
+        }
+        System.out.println("← REAR");
+        System.out.println();
+    }
+    private static void loadNextShip(){
+        if(containerStack.isEmpty()){
+            System.out.println("No containers available for loading.");
+            return;
+        }
+        if(shipQueue.isEmpty()){
+            System.out.println("No ships waiting for loading.");
+            return;
+        }
+
+        Container container = containerStack.pop();
+        Ship ship = shipQueue.poll();
+
+        System.out.println("Loaded: " + container + " → " + ship);
+        System.out.println("Remaining containers: " + containerStack.size());
+        System.out.println("Remaining ships waiting: " + shipQueue.size());
+        System.out.println();
+    }
+}
